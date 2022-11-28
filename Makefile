@@ -1,4 +1,4 @@
-PROJECT_NAME = template
+PROJECT_NAME = santa
 
 .PHONY = test build push clean hooks
 
@@ -12,9 +12,6 @@ hooks: venv
 
 build: venv clean
 	$(VENV)/python setup.py sdist bdist_wheel
-
-sphinx: venv
-	. $(VENV)/activate && cd docs && $(MAKE) html
 
 clean:
 	rm -rf build dist *.egg-info

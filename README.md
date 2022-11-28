@@ -1,1 +1,1 @@
-# Python project template
+# Secret Santa Telegram Bot
