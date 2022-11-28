@@ -4,6 +4,9 @@ PROJECT_NAME = santa
 
 install: venv hooks
 
+run: venv
+	$(VENV)/python -m santa
+
 test: venv
 	$(VENV)/pytest --cov=$(PROJECT_NAME) --cov-report=html --cov-report=term tests/
 
