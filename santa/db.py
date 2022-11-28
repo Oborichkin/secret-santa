@@ -25,6 +25,13 @@ def get_participants(santa_id, chat_id):
     return r.smembers(f"set_{santa_id}")
 
 
+# TODO keep list of santa_id's that user is enrolled
 def enroll(santa_id, chat_id):
+    if not r.exists(santa_id):
+        raise Exception("No santa found!")
     r.sadd(f"set_{santa_id}", chat_id)
     logger.info(f"Added new participant for santa {santa_id}: {chat_id}")
+
+
+def leave(santa_id, chat_id):
+    pass    # TODO Allow users to leave
