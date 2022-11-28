@@ -12,6 +12,6 @@ setuptools.setup(
     install_requires=[
         "python-telegram-bot @ git+https://github.com/python-telegram-bot/python-telegram-bot#egg=python-telegram-bot",
         "python-dotenv",
-        "redis"
-    ]
+        "redis",
+    ],
 )

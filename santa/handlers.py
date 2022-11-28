@@ -1,25 +1,19 @@
 import enum
 import logging
 
-from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton
+from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes, ConversationHandler
 from telegram.constants import ParseMode
 
 from santa import db
 from santa.utils import derangement
 
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
 
-reply_keyboard = [
-    ["Create", "Enroll"],
-    ["Cancel"]
-]
+reply_keyboard = [["Create", "Enroll"], ["Cancel"]]
 reply_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
 
 
@@ -30,14 +24,18 @@ class States(enum.Enum):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # TODO Make a more sensible message
-    await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!", reply_markup=reply_markup)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!", reply_markup=reply_markup
+    )
 
 
 async def create(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # TODO better feedback and error handling
     santa_id = db.new_santa(update.effective_chat.id)
     logger.info(f"User @{update.effective_chat.username} generated new santa: {santa_id}")
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Created! `{santa_id}`", parse_mode=ParseMode.MARKDOWN)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text=f"Created! `{santa_id}`", parse_mode=ParseMode.MARKDOWN
+    )
 
 
 async def begin_enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -79,7 +77,9 @@ async def begin(update: Update, context: ContextTypes.DEFAULT_TYPE):
             who_gifts_who = derangement(participants)
             for sender, receiver in who_gifts_who:
                 chat = await context.bot.get_chat(int(receiver))
-                await context.bot.send_message(chat_id=int(sender), text=f"Дари @{chat.username}!", parse_mode=ParseMode.MARKDOWN)
+                await context.bot.send_message(
+                    chat_id=int(sender), text=f"Дари @{chat.username}!", parse_mode=ParseMode.MARKDOWN
+                )
     else:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="Bad command!")
 

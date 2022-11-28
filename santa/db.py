@@ -3,7 +3,7 @@ import redis
 
 from santa.utils import random_string
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+r = redis.Redis(host="localhost", port=6379, db=0)
 logger = logging.getLogger(__name__)
 
 RETRY = 100
@@ -21,7 +21,9 @@ def new_santa(chat_id):
 
 
 def get_participants(santa_id, chat_id):
-    assert int(r.get(santa_id)) == chat_id, f"Permission error! Santa was created from {r.get(santa_id)} but accessed from {chat_id}"
+    assert (
+        int(r.get(santa_id)) == chat_id
+    ), f"Permission error! Santa was created from {r.get(santa_id)} but accessed from {chat_id}"
     return r.smembers(f"set_{santa_id}")
 
 
@@ -34,4 +36,4 @@ def enroll(santa_id, chat_id):
 
 
 def leave(santa_id, chat_id):
-    pass    # TODO Allow users to leave
+    pass  # TODO Allow users to leave

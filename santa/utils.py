@@ -8,7 +8,7 @@ s = string.ascii_lowercase
 
 # Generate something with better good distribution
 def random_string() -> str:
-    return ''.join(random.choice(s) for i in range(8))
+    return "".join(random.choice(s) for i in range(8))
 
 
 # https://stackoverflow.com/questions/52854146/how-to-compute-derangement-permutation-of-a-list-with-repeating-elements
