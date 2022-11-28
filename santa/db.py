@@ -21,10 +21,13 @@ def new_santa(chat_id):
 
 
 def get_participants(santa_id, chat_id):
-    assert (
-        int(r.get(santa_id)) == chat_id
-    ), f"Permission error! Santa was created from {r.get(santa_id)} but accessed from {chat_id}"
-    return r.smembers(f"set_{santa_id}")
+    if r.exists(santa_id) and int(r.get(santa_id) == chat_id):
+        return r.smembers(f"set_{santa_id}")
+    raise PermissionError("You are not allowed to see the list of participants for this santa")
+
+
+def get_creator(santa_id) -> int:
+    return int(r.get(santa_id))
 
 
 # TODO keep list of santa_id's that user is enrolled

@@ -13,13 +13,15 @@ logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 
-reply_keyboard = [["Create", "Enroll"], ["Cancel"]]
+reply_keyboard = [["Create", "Enroll"], ["List", "Info"]]
 reply_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=False)
+cancel_keyboard = [["Cancel"]]
+cancel_markup = ReplyKeyboardMarkup(cancel_keyboard, one_time_keyboard=True)
 
 
 class States(enum.Enum):
     IDLE = 0
-    ENROLLING = 1
+    AWAIT_SANTA_ID = 1
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -38,9 +40,9 @@ async def create(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def begin_enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Enter Santa ID:")
-    return States.ENROLLING
+async def get_santa_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Enter Santa ID:", reply_markup=cancel_markup)
+    return States.AWAIT_SANTA_ID
 
 
 async def enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -53,17 +55,24 @@ async def enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
     except Exception as e:
         await update.message.reply_text(str(e))
-        return States.ENROLLING
+        return States.AWAIT_SANTA_ID
 
 
 async def members(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # TODO print usernames
-    if len(context.args) == 1:
-        santa_id = context.args[0]
+    try:
+        santa_id = update.message.text
         participants = db.get_participants(santa_id, update.effective_chat.id)
         await context.bot.send_message(chat_id=update.effective_chat.id, text=str(participants))
-    else:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="Bad command!")
+        return ConversationHandler.END
+    except PermissionError as e:
+        await update.message.reply_text(str(e))
+        return States.AWAIT_SANTA_ID
+
+
+async def santa_info(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    santa_id = update.message.text
+    creator_chat = await context.bot.get_chat(db.get_creator(santa_id))
+    await context.bot.send_message(chat_id=update.effective_chat.id, text=f"Создатель санты: @{creator_chat.username}")
 
 
 async def begin(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -87,5 +96,5 @@ async def begin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Cancels and ends the conversation."""
     logger.info(f"User {update.effective_chat.username} enrolling.")
-    await update.message.reply_text("Enrolling cancelled!")
+    await update.message.reply_text("Operation cancelled", reply_markup=reply_markup)
     return ConversationHandler.END
