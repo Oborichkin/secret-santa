@@ -10,9 +10,14 @@ load_dotenv()
 
 application = ApplicationBuilder().token(os.environ.get("TOKEN")).build()
 
-start_handler = CommandHandler("start", start)
-create_handler = MessageHandler(filters.Text("Create"), create)
-begin_handler = CommandHandler("begin", begin)
+
+def make_santa_id_convo_handler(entry_text, handler):
+    return ConversationHandler(
+        entry_points=[MessageHandler(filters.Text(entry_text), get_santa_id)],
+        states={States.AWAIT_SANTA_ID: [MessageHandler(filters.TEXT & ~filters.Text("Cancel"), handler)]},
+        fallbacks=[MessageHandler(filters.Text("Cancel"), cancel)],
+    )
+
 
 enroll_handler = ConversationHandler(
     entry_points=[MessageHandler(filters.Text("Enroll"), get_santa_id)],
@@ -32,6 +37,15 @@ info_handler = ConversationHandler(
     fallbacks=[MessageHandler(filters.Text("Cancel"), cancel)],
 )
 
-application.add_handlers([start_handler, create_handler, members_handler, begin_handler, enroll_handler, info_handler])
+application.add_handlers(
+    [
+        CommandHandler("start", start),
+        MessageHandler(filters.Text("Create"), create),
+        CommandHandler("begin", begin),
+        make_santa_id_convo_handler("List", members),
+        make_santa_id_convo_handler("Enroll", enroll),
+        make_santa_id_convo_handler("Info", santa_info),
+    ]
+)
 
 application.run_polling()
