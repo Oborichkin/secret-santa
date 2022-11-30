@@ -9,6 +9,19 @@ logger = logging.getLogger(__name__)
 RETRY = 100
 
 
+def add_user_info(chat_id: int, info: str):
+    r.set(f"user_{chat_id}", info)
+
+
+def get_user_info(chat_id: int) -> str:
+    if info := r.get(f"user_{chat_id}"):
+        return info.decode("utf-8")
+
+
+def remove_user_info(chat_id: int):
+    r.delete(f"user_{chat_id}")
+
+
 def new_santa(chat_id):
     for i in range(RETRY):
         santa_id = random_string()
@@ -21,8 +34,10 @@ def new_santa(chat_id):
 
 
 def get_participants(santa_id, chat_id):
-    if r.exists(santa_id) and int(r.get(santa_id) == chat_id):
+    if r.exists(santa_id) and int(r.get(santa_id)) == chat_id:
         return r.smembers(f"set_{santa_id}")
+    logger.error(f"{int(r.get(santa_id))} == {chat_id}")
+    logger.error(r.exists(santa_id) and int(r.get(santa_id) == chat_id))
     raise PermissionError("You are not allowed to see the list of participants for this santa")
 
 
