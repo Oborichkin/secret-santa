@@ -62,7 +62,7 @@ application.add_handlers(
         make_santa_id_convo_handler(Button.ENROLL, enroll),
         make_santa_id_convo_handler("Info", santa_info),
         memo_handler,
-        MessageHandler(filters.TEXT, reset),
+        MessageHandler(filters.Text(Button.BACK), reset),
     ]
 )
 

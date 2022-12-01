@@ -35,7 +35,7 @@ def new_santa(chat_id):
 
 def get_participants(santa_id, chat_id):
     if r.exists(santa_id) and int(r.get(santa_id)) == chat_id:
-        return r.smembers(f"set_{santa_id}")
+        return [int(member) for member in r.smembers(f"set_{santa_id}")]
     logger.error(f"{int(r.get(santa_id))} == {chat_id}")
     logger.error(r.exists(santa_id) and int(r.get(santa_id) == chat_id))
     raise PermissionError("You are not allowed to see the list of participants for this santa")
