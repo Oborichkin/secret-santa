@@ -9,5 +9,14 @@ services:
     volumes:
       - redis_data:/data
 
+  santa:
+    image: santa
+    build:
+      context: .
+    environment:
+      - TOKEN=${TOKEN}
+    depends_on:
+      - redis
+
 volumes:
   redis_data:

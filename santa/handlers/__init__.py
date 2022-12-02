@@ -68,6 +68,13 @@ memo_warning = f"""Для добавления в комнату сначала 
 """
 
 
+success_enroll = (
+    lambda santa_id: f"""Ты был добавлен в комнату `{santa_id}` 🎉
+Когда закончится дедлайн регистрации тебе придет уведомление с именем человека, \
+для которого ты будешь тайным сантой 🎅"""
+)
+
+
 async def enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # TODO better feedback and error handling
     if not db.get_user_info(update.effective_chat.id):
@@ -82,7 +89,7 @@ async def enroll(update: Update, context: ContextTypes.DEFAULT_TYPE):
         db.enroll(santa_id, update.effective_chat.id)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=f"Вы были успешно добавлены в комнату `{santa_id}`",
+            text=success_enroll(santa_id),
             reply_markup=reply_markup,
             parse_mode=ParseMode.MARKDOWN,
         )
