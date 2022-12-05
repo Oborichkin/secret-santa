@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 from santa.handlers import start, create, enroll, members, begin, get_santa_id, santa_info, reset
 from santa.handlers.memo import get_user_info, delete_user_info, update_user_info, prompt_user_info, index
+from santa.handlers.room import list_participants
 from santa.handlers.states import State
 import santa.button as Button
 
@@ -56,8 +57,9 @@ memo_handler = ConversationHandler(
 application.add_handlers(
     [
         CommandHandler("start", start),
-        MessageHandler(filters.Text(Button.CREATE), create),
         CommandHandler("begin", begin),
+        CommandHandler("list", list_participants),
+        MessageHandler(filters.Text(Button.CREATE), create),
         make_santa_id_convo_handler(Button.LIST, members),
         make_santa_id_convo_handler(Button.ENROLL, enroll),
         make_santa_id_convo_handler("Info", santa_info),

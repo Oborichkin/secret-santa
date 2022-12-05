@@ -1,3 +1,4 @@
+from typing import List
 import logging
 import redis
 
@@ -33,7 +34,7 @@ def new_santa(chat_id):
         raise Exception(f"No unique santas created in {RETRY} times")
 
 
-def get_participants(santa_id, chat_id):
+def get_participants(santa_id, chat_id) -> List[int]:
     if r.exists(santa_id) and int(r.get(santa_id)) == chat_id:
         return [int(member) for member in r.smembers(f"set_{santa_id}")]
     logger.error(f"{int(r.get(santa_id))} == {chat_id}")
