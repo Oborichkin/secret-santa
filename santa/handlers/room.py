@@ -17,7 +17,7 @@ async def list_participants(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             participants = db.get_participants(santa_id, update.effective_chat.id)
             for chat_id in participants:
-                await context.bot.send_message(chat_id=update.effective_chat.id, text=db.get_user_info(user))
+                await context.bot.send_message(chat_id=update.effective_chat.id, text=db.get_user_info(chat_id))
         except Exception as e:
             await context.bot.send_message(chat_id=update.effective_chat.id, text=str(e))
     else:
